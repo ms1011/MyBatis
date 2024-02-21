@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohgiraffers.section01.xml.MenuMapper">
+
+    <resultMap id="menuResultMap" type="com.ohgiraffers.section01.xml.MenuDTO">
+        <id property="menuCode" column="MENU_CODE"/>
+        <result property="menuName" column="MENU_NAME"/>
+        <result property="menuPrice" column="MENU_PRICE"/>
+        <result property="categoryCode" column="CATEGORY_CODE"/>
+        <result property="orderableStatus" column="ORDERABLE_STATUS"/>
+    </resultMap>
+
+    <parameterMap id="menuParameterMap" type="com.ohgiraffers.section01.xml.MenuDTO"/>
+
+    <select id="selectMenuByPrice" parameterType="_int" resultMap="menuResultMap">
+        SELECT
+               A.MENU_CODE
+             , A.MENU_NAME
+             , A.MENU_PRICE
+             , A.CATEGORY_CODE
+             , A.ORDERABLE_STATUS
+          FROM TBL_MENU A
+         WHERE A.ORDERABLE_STATUS = 'Y'
+        <!-- 설명.
+                OGNL(Object Graph Navigation Language)
+                 Single Quotation('') 구간의 값은 리터럴 값으로 보고 그게 아닌 이름은 객체 필드 또는 변수로 인식하게 작성하는 기법
+
+             필기.
+                1. gt(>) : greater than
+                2. gte(>=) : greater than equal
+                3. lt(<) : less than
+                4. lte(<=) : less than equal
+                5. eq(==) : equal
+                6. ne(!=) : not equal
+        -->
+        <if test="maxPrice gte 0 and maxPrice lte 10000">
+            <![CDATA[
+           AND A.MENU_PRICE < #{maxPrice}
+           ]]>
+        </if>
+        <if test="maxPrice gt 10000 and maxPrice lte 20000">
+           AND A.MENU_PRICE BETWEEN 10000 AND #{maxPrice}
+        </if>
+        <if test="maxPrice gt 20000 and maxPrice lte 30000">
+           AND A.MENU_PRICE BETWEEN 20000 AND #{maxPrice}
+        </if>
+        <if test="maxPrice gt 30000">
+           AND A.MENU_PRICE BETWEEN 30000 AND #{maxPrice}
+        </if>
+    </select>
+
+    <select id="searchMenu" parameterType="com.ohgiraffers.section01.xml.SearchCriteria" resultMap="menuResultMap">
+        SELECT
+               A.MENU_CODE
+             , A.MENU_NAME
+             , A.MENU_PRICE
+             , A.CATEGORY_CODE
+             , A.ORDERABLE_STATUS
+          FROM TBL_MENU A
+        <if test="condition == 'category'">
+          JOIN TBL_CATEGORY B ON (A.CATEGORY_CODE = B.CATEGORY_CODE)
+        </if>
+         WHERE A.ORDERABLE_STATUS = 'Y'
+        <if test="condition == 'name'">
+           AND A.MENU_NAME LIKE CONCAT('%', #{value}, '%')
+        </if>
+        <if test="condition == 'category'">
+           AND B.CATEGORY_NAME = #{value}
+        </if>
+        ORDER BY 1 DESC
+    </select>
+
+</mapper>
