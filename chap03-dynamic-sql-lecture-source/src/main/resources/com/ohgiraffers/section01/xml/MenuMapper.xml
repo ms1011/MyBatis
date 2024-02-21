@@ -73,4 +73,46 @@
         ORDER BY 1 DESC
     </select>
 
+    <select id="searchMenuBySupCategory" parameterType="com.ohgiraffers.section01.xml.SearchCriteria" resultMap="menuResultMap">
+        SELECT
+               A.MENU_CODE
+             , A.MENU_NAME
+             , A.MENU_PRICE
+             , A.CATEGORY_CODE
+             , A.ORDERABLE_STATUS
+          FROM TBL_MENU A
+         WHERE A.ORDERABLE_STATUS = 'Y'
+        <choose>
+            <when test="value == '식사'">
+           AND A.CATEGORY_CODE IN (4, 5, 6, 7)
+            </when>
+            <when test="value == '음료'">
+           AND A.CATEGORY_CODE IN (8, 9, 10)
+            </when>
+            <when test="value == '디저트'">
+           AND A.CATEGORY_CODE IN (11, 12)
+            </when>
+        </choose>
+    </select>
+
+    <select id="searchMenuByRandomMenuCode" resultMap="menuResultMap" parameterType="list">
+        SELECT
+               A.MENU_CODE
+             , A.MENU_NAME
+             , A.MENU_PRICE
+             , A.CATEGORY_CODE
+             , A.ORDERABLE_STATUS
+          FROM TBL_MENU A
+         WHERE A.MENU_CODE IN
+        <!-- 설명. list 또는 map과 같은 컬렉션 타입으로 넘어온 값을 가지고 반복해서 원하는 sql을 작성할 수 있다 -->
+        <foreach collection="list" item="menuCode" open="(" close=")" separator=", ">
+            #{menuCode}
+        </foreach>
+
+        <!-- 설명. 원하는 곳에 있는 메소드의 반환 값을 바로 활용할 수도 있다 (권장되지 않음) -->
+        <!--<foreach collection="@com.ohgiraffers.section01.xml.Application@generateRandomMenuCodeList()"
+                 item="menuCode" open="(" close=")" separator=", ">
+            #{menuCode}
+        </foreach>-->
+    </select>
 </mapper>
