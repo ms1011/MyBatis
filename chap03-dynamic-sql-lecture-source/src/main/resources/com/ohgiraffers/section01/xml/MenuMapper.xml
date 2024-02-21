@@ -32,7 +32,7 @@
                 3. lt(<) : less than
                 4. lte(<=) : less than equal
                 5. eq(==) : equal
-                6. ne(!=) : not equal
+                6. neq(!=) : not equal
         -->
         <if test="maxPrice gte 0 and maxPrice lte 10000">
             <![CDATA[
