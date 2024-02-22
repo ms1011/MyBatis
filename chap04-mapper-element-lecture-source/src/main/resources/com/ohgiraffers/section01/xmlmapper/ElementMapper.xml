@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohgiraffers.section01.xmlmapper.ElementMapper">
+    <resultMap id="menuResultMap1" type="com.ohgiraffers.section01.xmlmapper.MenuDTO" autoMapping="false">
+        <id property="menuCode" column="MENU_CODE"/>
+        <result property="menuName" column="MENU_NAME"/>
+        <result property="menuPrice" column="MENU_PRICE"/>
+        <result property="categoryCode" column="CATEGORY_CODE"/>
+    </resultMap>
+    <resultMap id="menuResultMap2" type="com.ohgiraffers.section01.xmlmapper.MenuDTO" extends="menuResultMap1">
+        <result property="orderableStatus" column="ORDERABLE_STATUS"/>
+    </resultMap>
+
+    <select id="selectResultMapTest" resultMap="menuResultMap2">
+        SELECT
+              A.MENU_CODE
+            , A.MENU_NAME
+            , A.MENU_PRICE
+            , A.CATEGORY_CODE
+            , A.ORDERABLE_STATUS
+        FROM TBL_MENU A
+        WHERE A.ORDERABLE_STATUS = 'Y'
+    </select>
+
+
+    <!--<resultMap id="menuAndCategoryResultMap" type="com.ohgiraffers.section01.xmlmapper.MenuAndCategoryDTO">
+        <id property="menuCode" column="MENU_CODE"/>
+        <result property="menuName" column="MENU_NAME"/>
+        <result property="menuPrice" column="MENU_PRICE"/>
+        <result property="orderableStatus" column="ORDERABLE_STATUS"/>
+        <association property="category" resultMap="categoryResultMap"/>
+    </resultMap>
+    <resultMap id="categoryResultMap" type="com.ohgiraffers.section01.xmlmapper.CategoryDTO">
+        <id property="categoryCode" column="CATEGORY_CODE"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="refCategoryCode" column="REF_CATEGORY_CODE"/>
+    </resultMap>-->
+
+    <resultMap id="menuAndCategoryResultMap" type="com.ohgiraffers.section01.xmlmapper.MenuAndCategoryDTO">
+        <id property="menuCode" column="MENU_CODE"/>
+        <result property="menuName" column="MENU_NAME"/>
+        <result property="menuPrice" column="MENU_PRICE"/>
+        <result property="orderableStatus" column="ORDERABLE_STATUS"/>
+        <association property="category" javaType="com.ohgiraffers.section01.xmlmapper.CategoryDTO">
+            <id property="categoryCode" column="CATEGORY_CODE"/>
+            <result property="categoryName" column="CATEGORY_NAME"/>
+            <result property="refCategoryCode" column="REF_CATEGORY_CODE"/>
+        </association>
+    </resultMap>
+    <select id="selectResultMapAssociationTest" resultMap="menuAndCategoryResultMap">
+        SELECT
+              A.MENU_CODE
+            , A.MENU_NAME
+            , A.MENU_PRICE
+            , B.CATEGORY_CODE
+            , B.CATEGORY_NAME
+            , B.REF_CATEGORY_CODE
+            , A.ORDERABLE_STATUS
+        FROM TBL_MENU A
+        JOIN TBL_CATEGORY B ON (A.CATEGORY_CODE = B.CATEGORY_CODE)
+        WHERE A.ORDERABLE_STATUS = 'Y'
+    </select>
+</mapper>
