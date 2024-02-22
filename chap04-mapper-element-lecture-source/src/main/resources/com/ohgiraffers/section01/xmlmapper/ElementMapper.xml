@@ -50,6 +50,7 @@
             <result property="refCategoryCode" column="REF_CATEGORY_CODE"/>
         </association>
     </resultMap>
+
     <select id="selectResultMapAssociationTest" resultMap="menuAndCategoryResultMap">
         SELECT
               A.MENU_CODE
@@ -62,5 +63,47 @@
         FROM TBL_MENU A
         JOIN TBL_CATEGORY B ON (A.CATEGORY_CODE = B.CATEGORY_CODE)
         WHERE A.ORDERABLE_STATUS = 'Y'
+    </select>
+
+    <!--<resultMap id="categoryAndMenuResultMap" type="com.ohgiraffers.section01.xmlmapper.CategoryAndMenuDTO">
+        <id property="categoryCode" column="CATEGORY_CODE"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="refCategoryCode" column="REF_CATEGORY_CODE"/>
+        <collection property="menus" resultMap="menuResultMap"/>
+    </resultMap>
+    <resultMap id="menuResultMap" type="com.ohgiraffers.section01.xmlmapper.MenuDTO">
+        <id property="menuCode" column="MENU_CODE"/>
+        <result property="menuName" column="MENU_NAME"/>
+        <result property="menuPrice" column="MENU_PRICE"/>
+        <result property="categoryCode" column="CATEGORY_CODE"/>
+        <result property="orderableStatus" column="ORDERABLE_STATUS"/>
+    </resultMap>-->
+
+    <resultMap id="categoryAndMenuResultMap" type="com.ohgiraffers.section01.xmlmapper.CategoryAndMenuDTO">
+        <id property="categoryCode" column="CATEGORY_CODE"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="refCategoryCode" column="REF_CATEGORY_CODE"/>
+        <collection property="menus" ofType="com.ohgiraffers.section01.xmlmapper.MenuDTO">
+            <id property="menuCode" column="MENU_CODE"/>
+            <result property="menuName" column="MENU_NAME"/>
+            <result property="menuPrice" column="MENU_PRICE"/>
+            <result property="categoryCode" column="CATEGORY_CODE"/>
+            <result property="orderableStatus" column="ORDERABLE_STATUS"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectResultMapCollectionTest" resultMap="categoryAndMenuResultMap">
+        SELECT
+              A.CATEGORY_CODE
+            , A.CATEGORY_NAME
+            , A.REF_CATEGORY_CODE
+            , B.MENU_CODE
+            , B.MENU_NAME
+            , B.MENU_PRICE
+            , B.CATEGORY_CODE
+            , B.ORDERABLE_STATUS
+        FROM TBL_CATEGORY A
+        LEFT JOIN TBL_MENU B ON (A.CATEGORY_CODE = B.CATEGORY_CODE)
+        ORDER BY A.CATEGORY_CODE
     </select>
 </mapper>
